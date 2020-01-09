@@ -24,6 +24,16 @@ const styles = theme => ({
     paddingRight: theme.spacing(1),
     borderRadius: `0 ${theme.spacing(0.5)}px ${theme.spacing(0.5)}px 0`,
   },
+  fwKey: {
+    color: theme.palette.getContrastText(theme.palette.primary.main),
+    background: theme.palette.primary.main,
+    textAlign: "center",
+    borderRadius: `${theme.spacing(0.5)}px ${theme.spacing(0.5)}px 0 0`,
+  },
+  image: {
+    borderRadius: `0 0 ${theme.spacing(0.5)} ${theme.spacing(0.5)}`,
+    display: "block",
+  },
   icon: {
     paddingLeft: theme.spacing(0.3),
     verticalAlign: "middle",
@@ -38,17 +48,44 @@ class Label extends React.PureComponent {
     value: PropTypes.string.isRequired,
   };
 
-  parseLink = value => {
+  parseLink = (value, name) => {
     try {
       new URL(value);
+      // TODO make sure to have a list of all different image file types,
+      // then do the fetch request after to be sure
+      if (value.includes("jpg")) {
+        return (
+          <div>
+            <div className={this.props.classes.fwKey}>{name}</div>
+            <div>
+              <img
+                className={this.props.classes.image}
+                src={value}
+                alt={"bunny"}
+              />
+            </div>
+          </div>
+        );
+      }
+      // fetch(value).then(response => console.log(response));
     } catch (e) {
-      return value;
+      return (
+        <div>
+          <span className={this.props.classes.key}>{name}</span>
+          <span className={this.props.classes.value}>{value}</span>;
+        </div>
+      );
     }
     return (
-      <Link href={value}>
-        {value}
-        <LinkIcon className={this.props.classes.icon} />
-      </Link>
+      <div>
+        <span className={this.props.classes.key}>{name}</span>
+        <span className={this.props.classes.value}>
+          <Link href={value}>
+            {value}
+            <LinkIcon className={this.props.classes.icon} />
+          </Link>
+        </span>
+      </div>
     );
   };
 
@@ -56,8 +93,7 @@ class Label extends React.PureComponent {
     const { classes, name, value } = this.props;
     return (
       <Typography component="span" className={classes.root}>
-        <span className={classes.key}>{name}</span>
-        <span className={classes.value}>{this.parseLink(value)}</span>
+        {this.parseLink(value, name)}
       </Typography>
     );
   }
